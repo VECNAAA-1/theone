@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{% block title %}FeedbackIQ{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🧠</span>
+      <span class="logo-text">FeedbackIQ</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('main.index') }}"  class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}"><span>📊</span> Dashboard</a>
+      <a href="{{ url_for('main.upload') }}" class="nav-link {% if request.endpoint == 'main.upload' %}active{% endif %}"><span>🔍</span> Analyze</a>
+      <a href="{{ url_for('main.results') }}" class="nav-link {% if request.endpoint == 'main.results' %}active{% endif %}"><span>📈</span> Results</a>
+      <a href="{{ url_for('main.history') }}" class="nav-link {% if request.endpoint == 'main.history' %}active{% endif %}"><span>🗂️</span> History</a>
+      <a href="{{ url_for('main.audit_log') }}" class="nav-link {% if request.endpoint == 'main.audit_log' %}active{% endif %}"><span>📋</span> Audit Log</a>
+      {% if session.get('role') == 'admin' %}
+      <a href="{{ url_for('auth.admin_users') }}" class="nav-link {% if request.endpoint == 'auth.admin_users' %}active{% endif %}"><span>👥</span> Users</a>
+      {% endif %}
+      <a href="{{ url_for('main.about') }}" class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}"><span>ℹ️</span> About</a>
+    </nav>
+
+    <!-- User panel at bottom -->
+    {% if session.get('user_id') %}
+    <div class="sidebar-user">
+      <div class="su-avatar">{{ (session.get('full_name') or session.get('username','?'))[0] | upper }}</div>
+      <div class="su-info">
+        <div class="su-name">{{ session.get('full_name') or session.get('username') }}</div>
+        <div class="su-role">{{ session.get('role','analyst') }}</div>
+      </div>
+      <div class="su-actions">
+        <a href="{{ url_for('auth.profile') }}" title="Profile">⚙️</a>
+        <a href="{{ url_for('auth.logout') }}" title="Sign out" style="color:var(--negative);">🚪</a>
+      </div>
+    </div>
+    {% endif %}
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-container">
+        {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – FeedbackIQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="subtitle">Welcome back, <strong>{{ session.get('full_name') or session.get('username') }}</strong> 👋</p>
+  </div>
+  <a href="{{ url_for('main.upload') }}" class="btn btn-primary">+ New Analysis</a>
+</div>
+
+<!-- Stats from DB -->
+<div class="stats-grid" id="db-stats">
+  <div class="stat-card tot"><div class="stat-icon">📊</div><div class="stat-info"><span class="stat-label">Total Analyses</span><span class="stat-value" id="s-total">—</span></div></div>
+  <div class="stat-card tot"><div class="stat-icon">📝</div><div class="stat-info"><span class="stat-label">Feedback Items</span><span class="stat-value" id="s-items">—</span></div></div>
+  <div class="stat-card positive"><div class="stat-icon">😊</div><div class="stat-info"><span class="stat-label">Total Positive</span><span class="stat-value" id="s-pos">—</span></div></div>
+  <div class="stat-card negative"><div class="stat-icon">😞</div><div class="stat-info"><span class="stat-label">Total Negative</span><span class="stat-value" id="s-neg">—</span></div></div>
+</div>
+
+<!-- Quick Actions -->
+<div style="margin-bottom:28px;">
+  <h2 style="font-size:16px;font-weight:600;margin-bottom:14px;">Quick Actions</h2>
+  <div class="action-cards">
+    <a href="{{ url_for('main.upload') }}" class="action-card">
+      <span class="action-icon">✍️</span>
+      <h3>Analyze Feedback</h3>
+      <p>Paste text or upload CSV / TXT / JSON for instant NLP analysis.</p>
+    </a>
+    <a href="{{ url_for('main.history') }}" class="action-card">
+      <span class="action-icon">🗂️</span>
+      <h3>View History</h3>
+      <p>Browse all past analysis sessions saved to the database.</p>
+    </a>
+    <a href="{{ url_for('main.audit_log') }}" class="action-card">
+      <span class="action-icon">📋</span>
+      <h3>Audit Log</h3>
+      <p>Track every insert and delete operation with timestamps.</p>
+    </a>
+    {% if session.get('role') == 'admin' %}
+    <a href="{{ url_for('auth.admin_users') }}" class="action-card">
+      <span class="action-icon">👥</span>
+      <h3>Manage Users</h3>
+      <p>Create, reset passwords, and remove user accounts.</p>
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Features -->
+<div>
+  <h2 style="font-size:16px;font-weight:600;margin-bottom:14px;">System Capabilities</h2>
+  <div class="features-grid">
+    <div class="feature">🔍 <strong>Sentiment Analysis</strong> — Positive / Negative / Neutral via TextBlob</div>
+    <div class="feature">🏷️ <strong>Theme Extraction</strong> — TF-IDF keyword & n-gram extraction</div>
+    <div class="feature">☁️ <strong>Word Cloud</strong> — Visual frequency representation</div>
+    <div class="feature">📉 <strong>Polarity Histogram</strong> — Score distribution chart</div>
+    <div class="feature">💾 <strong>SQLite Database</strong> — All analyses persisted automatically</div>
+    <div class="feature">🔐 <strong>Auth System</strong> — Login, roles (admin / analyst), audit log</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load live DB stats
+fetch('/api/stats').then(r => r.json()).then(d => {
+  document.getElementById('s-total').textContent = d.total_analyses ?? '—';
+  document.getElementById('s-items').textContent = d.total_items   ?? '—';
+  document.getElementById('s-pos').textContent   = d.total_positive ?? '—';
+  document.getElementById('s-neg').textContent   = d.total_negative ?? '—';
+}).catch(() => {});
+</script>
+{% endblock %}

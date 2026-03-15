@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Results – FeedbackIQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Analysis Results</h1>
+  <p class="subtitle">Sentiment breakdown, themes, and insights</p>
+</div>
+
+<div id="no-results" class="empty-state">
+  <span>📭</span>
+  <h2>No analysis yet</h2>
+  <p>Go to <a href="{{ url_for('main.upload') }}">Analyze Feedback</a> to run your first analysis.</p>
+</div>
+
+<div id="results-container" class="hidden">
+
+  <!-- Summary Insight -->
+  <div class="card" id="summary-card">
+    <h2>📋 Summary</h2>
+    <p id="summary-text" class="summary-text"></p>
+  </div>
+
+  <!-- Alerts -->
+  <div id="alerts-container"></div>
+
+  <!-- Sentiment Stat Badges -->
+  <div class="stats-grid" id="result-stats"></div>
+
+  <!-- Charts Row 1 -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Sentiment Distribution</h3>
+      <img id="pie-chart" class="chart-img" />
+    </div>
+    <div class="chart-card">
+      <h3>Feedback Count by Sentiment</h3>
+      <img id="bar-chart" class="chart-img" />
+    </div>
+  </div>
+
+  <!-- Charts Row 2 -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Top Keywords</h3>
+      <img id="keyword-bar" class="chart-img" />
+    </div>
+    <div class="chart-card">
+      <h3>Polarity Distribution</h3>
+      <img id="polarity-histogram" class="chart-img" />
+    </div>
+  </div>
+
+  <!-- Word Cloud -->
+  <div class="card">
+    <h2>☁️ Word Cloud</h2>
+    <img id="word-cloud" class="chart-img full-width" />
+  </div>
+
+  <!-- Top Themes -->
+  <div class="card">
+    <h2>🏷️ Top Themes & Phrases</h2>
+    <div id="themes-list" class="tags-container"></div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="card">
+    <h2>💡 Recommendations</h2>
+    <ul id="recommendations-list" class="insights-list"></ul>
+  </div>
+
+  <!-- Per-Item Sentiment Table -->
+  <div class="card">
+    <h2>📄 Per-Item Sentiment</h2>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Feedback</th>
+            <th>Sentiment</th>
+            <th>Polarity</th>
+            <th>Subjectivity</th>
+          </tr>
+        </thead>
+        <tbody id="items-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

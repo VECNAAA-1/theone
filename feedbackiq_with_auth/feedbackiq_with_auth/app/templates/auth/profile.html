@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}My Profile – FeedbackIQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>My Profile</h1>
+  <p class="subtitle">Manage your account settings</p>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:860px;">
+
+  <!-- Account Info -->
+  <div class="card">
+    <h2>👤 Account Information</h2>
+    <div class="detail-row"><span>Username</span><strong>{{ user.username }}</strong></div>
+    <div class="detail-row"><span>Display Name</span><strong>{{ user.full_name or '—' }}</strong></div>
+    <div class="detail-row">
+      <span>Role</span>
+      <span class="badge {% if user.role == 'admin' %}badge-neg{% else %}badge-neu{% endif %}">
+        {{ user.role }}
+      </span>
+    </div>
+    <div class="detail-row"><span>Joined</span><small style="color:var(--text-muted)">{{ user.created_at }}</small></div>
+    <div class="detail-row"><span>Last Login</span><small style="color:var(--text-muted)">{{ user.last_login or 'Never' }}</small></div>
+
+    <form method="POST" style="margin-top:1.25rem; border-top:1px solid var(--border); padding-top:1rem;">
+      <input type="hidden" name="action" value="update_name">
+      <div class="form-group-inline">
+        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">Update Display Name</label>
+        <input type="text" name="full_name" class="form-input" value="{{ user.full_name or '' }}" placeholder="Your full name">
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-top:10px;">Save Name</button>
+    </form>
+  </div>
+
+  <!-- Change Password -->
+  <div class="card">
+    <h2>🔒 Change Password</h2>
+    {% if error %}
+      <div class="alert alert-error" style="margin-bottom:1rem;">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success" style="margin-bottom:1rem;">✓ {{ success }}</div>
+    {% endif %}
+    <form method="POST">
+      <input type="hidden" name="action" value="change_password">
+      <div class="form-group-inline">
+        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">Current Password</label>
+        <input type="password" name="current_password" class="form-input" required>
+      </div>
+      <div class="form-group-inline" style="margin-top:10px;">
+        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">New Password</label>
+        <input type="password" name="new_password" class="form-input" required minlength="6">
+      </div>
+      <div class="form-group-inline" style="margin-top:10px;">
+        <label style="font-size:.82rem;color:var(--text-muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">Confirm New Password</label>
+        <input type="password" name="confirm_password" class="form-input" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-top:14px;">Update Password</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

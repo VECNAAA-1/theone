@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Analyze Feedback – FeedbackIQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Analyze Feedback</h1>
+  <p class="subtitle">Paste text or upload a file to begin analysis</p>
+</div>
+
+<!-- Text Input Section -->
+<div class="card" id="text-section">
+  <h2>📝 Paste Feedback Text</h2>
+  <p class="card-desc">Enter one feedback item per line. Minimum 1 item required.</p>
+  <textarea id="feedback-text" rows="10" placeholder="Example:&#10;The product quality is amazing! Very satisfied.&#10;Delivery was extremely slow and packaging was damaged.&#10;Average experience, nothing special."></textarea>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="analyzeText()">🚀 Analyze Text</button>
+    <button class="btn btn-ghost" onclick="clearText()">✕ Clear</button>
+  </div>
+</div>
+
+<!-- File Upload Section -->
+<div class="card" id="file-section">
+  <h2>📂 Upload Feedback File</h2>
+  <p class="card-desc">Supported formats: <strong>CSV</strong> (first column used), <strong>TXT</strong> (one item per line), <strong>JSON</strong> (list of strings).</p>
+
+  <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
+    <div class="dz-icon">📁</div>
+    <p class="dz-title">Click or drag & drop your file here</p>
+    <p class="dz-sub">CSV · TXT · JSON — max 16 MB</p>
+    <input type="file" id="file-input" accept=".csv,.txt,.json" hidden onchange="handleFileSelect(event)" />
+  </div>
+
+  <div id="file-info" class="file-info hidden"></div>
+  <div class="btn-row" id="upload-btn-row" style="display:none">
+    <button class="btn btn-primary" onclick="analyzeFile()">🚀 Analyze File</button>
+    <button class="btn btn-ghost" onclick="resetFile()">✕ Remove</button>
+  </div>
+</div>
+
+<!-- Loading Spinner -->
+<div id="loading" class="loading-overlay hidden">
+  <div class="spinner"></div>
+  <p>Analyzing feedback… This may take a moment.</p>
+</div>
+
+<!-- Error Banner -->
+<div id="error-banner" class="alert alert-error hidden"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

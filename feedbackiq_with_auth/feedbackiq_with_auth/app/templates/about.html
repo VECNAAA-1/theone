@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}About – FeedbackIQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>About FeedbackIQ</h1>
+  <p class="subtitle">AI-powered customer feedback analysis system</p>
+</div>
+
+<div class="card">
+  <h2>🎯 Project Overview</h2>
+  <p>FeedbackIQ is an Intelligent Customer Feedback Analysis System that leverages Natural Language Processing (NLP) and Machine Learning to automatically process large volumes of unstructured customer feedback and extract meaningful business insights.</p>
+</div>
+
+<div class="card">
+  <h2>⚙️ System Architecture</h2>
+  <div class="arch-steps">
+    <div class="arch-step"><span class="step-num">1</span><div><strong>Data Collection</strong><br>Accepts text input, CSV, TXT, or JSON files.</div></div>
+    <div class="arch-step"><span class="step-num">2</span><div><strong>Text Preprocessing</strong><br>Removes stop words, punctuation, URLs; lemmatizes tokens.</div></div>
+    <div class="arch-step"><span class="step-num">3</span><div><strong>Sentiment Analysis</strong><br>TextBlob-based polarity & subjectivity scoring.</div></div>
+    <div class="arch-step"><span class="step-num">4</span><div><strong>Theme Extraction</strong><br>TF-IDF keyword and n-gram phrase extraction.</div></div>
+    <div class="arch-step"><span class="step-num">5</span><div><strong>Insight Generation</strong><br>Rule-based recommendations, alerts, and summaries.</div></div>
+    <div class="arch-step"><span class="step-num">6</span><div><strong>Visualization</strong><br>Pie charts, bar charts, word clouds, histograms.</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🛠️ Technology Stack</h2>
+  <div class="tech-grid">
+    <div class="tech-badge">🐍 Python 3.11</div>
+    <div class="tech-badge">🌶️ Flask 3.0</div>
+    <div class="tech-badge">📚 NLTK</div>
+    <div class="tech-badge">🤖 TextBlob</div>
+    <div class="tech-badge">📊 scikit-learn</div>
+    <div class="tech-badge">📉 Matplotlib</div>
+    <div class="tech-badge">☁️ WordCloud</div>
+    <div class="tech-badge">🎨 Vanilla JS + CSS</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📡 REST API</h2>
+  <div class="api-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method get">GET</span></td><td><code>/api/health</code></td><td>Health check</td></tr>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/analyze/text</code></td><td>Analyze JSON list of feedback strings</td></tr>
+        <tr><td><span class="method post">POST</span></td><td><code>/api/analyze/file</code></td><td>Analyze uploaded CSV / TXT / JSON file</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

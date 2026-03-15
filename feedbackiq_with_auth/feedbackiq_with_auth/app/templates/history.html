@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}History – FeedbackIQ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Analysis History</h1>
+  <p class="subtitle">
+    {% if session.get('role') == 'admin' %}All analyses (admin view){% else %}Your analyses{% endif %}
+    — stored in <code style="background:var(--surface2);padding:2px 8px;border-radius:4px;font-size:.82rem;color:var(--primary-light);">instance/feedbackiq_dev.db → analyses table</code>
+  </p>
+</div>
+
+{% if not analyses %}
+<div class="empty-state">
+  <span>📭</span>
+  <h2>No analyses yet</h2>
+  <p>Go to <a href="{{ url_for('main.upload') }}">Analyze Feedback</a> to run your first analysis.</p>
+</div>
+{% else %}
+
+<!-- Stats -->
+<div class="stats-grid" style="margin-bottom:24px;">
+  <div class="stat-card tot"><div class="stat-icon">📊</div><div class="stat-info"><span class="stat-label">Total Analyses</span><span class="stat-value">{{ analyses|length }}</span></div></div>
+  <div class="stat-card positive"><div class="stat-icon">😊</div><div class="stat-info"><span class="stat-label">Total Positive</span><span class="stat-value">{{ analyses|sum(attribute='pos_count') }}</span></div></div>
+  <div class="stat-card negative"><div class="stat-icon">😞</div><div class="stat-info"><span class="stat-label">Total Negative</span><span class="stat-value">{{ analyses|sum(attribute='neg_count') }}</span></div></div>
+  <div class="stat-card neutral"><div class="stat-icon">😐</div><div class="stat-info"><span class="stat-label">Total Neutral</span><span class="stat-value">{{ analyses|sum(attribute='neu_count') }}</span></div></div>
+</div>
+
+<!-- Search -->
+<div style="margin-bottom:1rem;">
+  <input type="text" id="histSearch" class="form-input-inline" placeholder="🔍 Filter analyses…" oninput="filterHistory()" style="width:300px;">
+</div>
+
+<!-- Table -->
+<div class="card" style="padding:0;overflow:hidden;">
+  <div style="overflow-x:auto;">
+    <table class="data-table" id="histTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          {% if session.get('role') == 'admin' %}<th>User</th>{% endif %}
+          <th>Source</th><th>Items</th><th>Positive</th><th>Negative</th><th>Neutral</th>
+          <th>Avg Polarity</th><th>Keywords</th><th>Date</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in analyses %}
+        <tr class="hist-row">
+          <td><code style="color:var(--text-muted)">#{{ a.id }}</code></td>
+          {% if session.get('role') == 'admin' %}<td><small>{{ a.username or '—' }}</small></td>{% endif %}
+          <td>
+            <span class="badge {% if a.source == 'file' %}badge-neu{% else %}badge-pos{% endif %}">
+              {{ '📂 file' if a.source == 'file' else '✍️ text' }}
+            </span>
+            {% if a.filename %}<br><small style="color:var(--text-muted)">{{ a.filename }}</small>{% endif %}
+          </td>
+          <td><strong>{{ a.total }}</strong></td>
+          <td style="color:var(--positive)">{{ a.pos_count }}</td>
+          <td style="color:var(--negative)">{{ a.neg_count }}</td>
+          <td style="color:var(--neutral)">{{ a.neu_count }}</td>
+          <td>
+            <span style="color:{% if a.avg_polarity > 0.1 %}var(--positive){% elif a.avg_polarity < -0.1 %}var(--negative){% else %}var(--neutral){% endif %}">
+              {{ "%.3f"|format(a.avg_polarity) }}
+            </span>
+          </td>
+          <td style="max-width:180px;">
+            {% set kws = a.top_keywords if a.top_keywords is iterable and a.top_keywords is not string else [] %}
+            <small style="color:var(--text-muted)">{{ kws[:4]|join(', ') if kws else '—' }}</small>
+          </td>
+          <td><small style="color:var(--text-muted)">{{ a.created_at[:16] if a.created_at else '—' }}</small></td>
+          <td>
+            <button class="btn btn-ghost btn-sm" onclick="deleteAnalysis({{ a.id }})">🗑 Delete</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterHistory() {
+  const q = document.getElementById('histSearch').value.toLowerCase();
+  document.querySelectorAll('#histTable .hist-row').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+async function deleteAnalysis(id) {
+  if (!confirm(`Delete analysis #${id}? This cannot be undone.`)) return;
+  const res = await fetch(`/api/analyses/${id}`, { method: 'DELETE' });
+  if (res.ok) { location.reload(); }
+  else { const d = await res.json(); alert(d.error || 'Delete failed.'); }
+}
+</script>
+{% endblock %}
